@@ -10,9 +10,9 @@ Práctica 1: Complejos simpliciales
 - Calcular el link de un símplice.
 - Calcular la característica de Euler.
 - Calcular el número de componentes de conexas.
-Añadir símplices nuevos (con su flotante).
-Almacenar la lista de todos los símplices ordenados según el valor del flotante y en caso de que dos tengan el mismo flotante ordenar por dimensión (las caras aparecen primero)
-Calcular el complejo simplicial formado por todos los símplices cuyo flotante asociado sea menor o igual que un flotante dado.
+- Añadir símplices nuevos (con su flotante).
+- Almacenar la lista de todos los símplices ordenados según el valor del flotante y en caso de que dos tengan el mismo flotante ordenar por dimensión (las caras aparecen primero)
+- Calcular el complejo simplicial formado por todos los símplices cuyo flotante asociado sea menor o igual que un flotante dado.
 
 
 Práctica 2: Alfa Complejos
