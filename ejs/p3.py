@@ -1,6 +1,7 @@
 import numpy as np
 from itertools import combinations
 
+
 def rango_z2(matriz):
     if matriz is None or matriz.size == 0:
         return 0
@@ -148,7 +149,9 @@ class ComplejoSimplicial:
         """
         Calcula los números de Betti del complejo simplicial.
         """
-        max_dim = max(self.simplices.keys())
+        max_dim = max(self.simplices.keys(), default=-1)
+        if max_dim == -1:
+            return [0]
         betti = [0] * (max_dim + 1)
         procesados_por_dim = {dim: set() for dim in self.simplices}
 
@@ -181,44 +184,111 @@ class ComplejoSimplicial:
         self.generar_complejo(simplices)
         return self.calcular_betti_incremental()
 
+
+def to_string_p3(complejo:ComplejoSimplicial, nombre="Complejo Simplicial"):
+    print("###########################################")
+    print("--> ", nombre)
+    dim = max(complejo.simplices.keys())
+    for p in range(dim):
+        print(f"- Matriz de borde dimension {p}:\n{complejo.matriz_borde(p+1)}")
+    print("- Numeros betti (metodo normal): ", complejo.calcular_betti())
+    print("- Numeros betti (algoritmo incremental): ", complejo.calcular_betti_incremental())
+    print("###########################################\n")
+
 if __name__ == "__main__":
-    sc1 = ComplejoSimplicial([(0,1,2,3)])
-    print("Ejemplo 1 - Números de Betti:", sc1.calcular_betti_incremental())
 
-    sc3 = ComplejoSimplicial([(0,1),(1,2,3,4),(4,5),(5,6),(4,6),(6,7,8),(8,9)])
-    print("Ejemplo 3 - Números de Betti:", sc3.calcular_betti_incremental())
+    tetraedro = ComplejoSimplicial([(0,1,2,3)])
+    to_string_p3(tetraedro, "Tetraedro")
 
-    sc5 = ComplejoSimplicial([(0,1,2),(2,3),(3,4)])
-    print("Ejemplo 5 - Números de Betti:", sc5.calcular_betti_incremental())
+    borde_tetraedro = ComplejoSimplicial([(0,1,2),(0,1,3),(0,2,3),(1,2,3)])
+    to_string_p3(borde_tetraedro, "Borde Tetraedro")
 
-    sc6 = ComplejoSimplicial([(1,2,4),(1,3,6),(1,4,6),(2,3,5),(2,4,5),(3,5,6)])
-    print("Ejemplo 6 - Números de Betti:", sc6.calcular_betti_incremental())
+    toro1 = ComplejoSimplicial([
+    (1, 2, 4), (2, 4, 5), (2, 3, 5), (3, 5, 6), 
+    (1, 3, 6), (1, 4, 6), (4, 5, 7), (5, 7, 8),
+    (5, 6, 8), (6, 8, 9), (4, 6, 9), (4, 7, 9),
+    (1, 7, 8), (1, 2, 8), (2, 8, 9), (2, 3, 9),
+    (3, 7, 9), (1, 3, 7)])
+    to_string_p3(toro1, "Toro: primera triangulacion")
 
-    sc8 = ComplejoSimplicial([
-    (1,2,4), (2,4,5), (2,3,5), (3,5,6), (1,3,6),
-    (1,4,6), (4,5,7), (5,7,8),(5,6,8),(6,8,9),
-    (4,6,9), (4,7,9), (1,7,8), (1,2,8), (2,8,9),
-    (2,3,9), (3,7,9), (1,3,7)])
-    print("Ejemplo 8 - Números de Betti:", sc8.calcular_betti_incremental())
 
-    sc9 = ComplejoSimplicial([(1,2,6), (2,3,4), (1,3,4), (1,2,5), (2,3,5), (1,3,6), (2,4,6), (1,4,5), (3,5,6), (4,5,6)])
-    print("Ejemplo 9 - Números de Betti:", sc9.calcular_betti_incremental())
-
-    sc10 = ComplejoSimplicial([(0,), (1,), (2,3), (4,5), (5,6), (4,6), (6,7,8,9)])
-    print("Ejemplo 10 - Números de Betti:", sc10.calcular_betti_incremental())
-
-    unoesqtoro = ComplejoSimplicial([
-    (1, 2), (1, 3), (1, 4), (1, 6), (1, 7), (1, 8),
-    (2, 3), (2, 4), (2, 5), (2, 8), (2, 9), (3, 5),
-    (3, 6), (3, 7), (3, 9), (4, 5), (4, 6), (4, 7),
-    (4, 9), (5, 6), (5, 7), (5, 8), (6, 8), (6, 9),
-    (7, 8), (7, 9), (8, 9)
-    ])
-    print("Numeros betti 1-esqueleto toro: ", unoesqtoro.calcular_betti_incremental())
-
-    toro = ComplejoSimplicial([
+    toro2 = ComplejoSimplicial([
     (1, 3, 7), (1,2,3), (2,5,7),(3,5,7),(3, 4, 5), (2, 5, 6), (2, 4, 7),
     (1, 2, 4), (1, 4,5), (1, 5, 6), (1, 6, 7),
-    (4, 6, 7), (3, 4, 6),(2,3,6)
+    (4, 6, 7), (3, 4, 6),(2,3,6),])
+    to_string_p3(toro2, "Toro: segunda triangulacion")
+
+
+    plano_proyectivo = ComplejoSimplicial([(1, 2, 6), (2, 3, 4), (1, 3, 4), (1, 2, 5), (2, 3, 5), 
+                        (1, 3, 6), (2, 4, 6), (1, 4, 5), (3, 5, 6), (4, 5, 6)])
+    to_string_p3(plano_proyectivo, "Plano Proyectivo")
+
+    botella_de_klein = ComplejoSimplicial([
+    (0, 1, 3), (1, 3, 4), (1, 2, 4), (2, 5, 4),(2,0,5),(0,5,6),(3,4,6),(4,6,7),
+    (4,5,7),(5,7,8),(5,6,8),(6,8,3),(6,7,0),(7,1,0),(7,8,1),(1,2,8),
+    (8, 3, 2), (3, 2, 0)])
+    to_string_p3(botella_de_klein, "Botella de Klein")
+
+
+    anillo = ComplejoSimplicial([(1, 2, 4), (1, 3, 6), (1, 4, 6), (2, 3, 5), (2, 4, 5), (3, 5, 6)])
+    to_string_p3(anillo, "Anillo")
+
+
+    sombrero_de_burro = ComplejoSimplicial([
+    (1, 2, 4), (1, 3, 4), (2, 3, 5), (2, 4, 5),
+    (1, 3, 5), (1, 6, 5), (1, 3, 6), (3, 6, 7),
+    (3, 2, 7), (1, 2, 7), (1, 7, 8), (1, 2, 8),
+    (6, 7 ,8), (4, 5, 6), (4, 6, 8), (3, 4, 8), (2, 3, 8)])
+    to_string_p3(sombrero_de_burro, "Sombrero de Burro")
+
+
+    ejemplo_trans_4 = ComplejoSimplicial([(0, 1),(1, 2, 3, 4),(4, 5),(5, 6),(4, 6),(6, 7, 8),(8, 9)])
+    to_string_p3(ejemplo_trans_4, "Ejemplo de la transparencia 4 (Homologia Simplicial II)")
+
+
+    doble_toro = ComplejoSimplicial([
+    (1, 2, 3), (1, 3, 4), (2, 3, 5), (3, 4, 5), (2, 5, 6),
+    (4, 5, 7), (5, 6, 8), (5, 7, 8), (6, 8, 9), (7, 8, 10),
+    (8, 9, 10), (1, 4, 7), (1, 6, 9), (1, 7, 10), (2, 6, 9),
+    (2, 7, 10), (3, 8, 10), (3, 9, 10), (4, 9, 10), (5, 9, 10),
+    (1, 2, 6), (1, 3, 9), (3, 6, 7), (6, 8, 10), (4, 5, 9),
+    (2, 4, 8), (3, 7, 9), (5, 6, 10), (7, 8, 9),
+    (4, 6, 8), (3, 5, 9)
     ])
-    print("Betti Toro: ", toro.calcular_betti_incremental())
+    to_string_p3(doble_toro, "Doble Toro")
+
+    # Ejemplo 1: Conjunto vacío
+    alfa_complejo_1 = ComplejoSimplicial([])
+    puntos1 = []
+    radio1 = 0
+    print("Números Betti alfa_complejo_1: ", alfa_complejo_1.calcular_betti_alfa_complejos(puntos1, radio1))
+
+    # Ejemplo 2: Conjunto de puntos simples en línea (2D)
+    alfa_complejo_2 = ComplejoSimplicial([])
+    puntos2 = [[0, 0], [1, 0], [2, 0], [3, 0]]
+    radio2 = 1.5
+    print("Números Betti alfa_complejo_2: ", alfa_complejo_2.calcular_betti_alfa_complejos(puntos2, radio2))
+
+    # Ejemplo 3: Cuadrado en 2D
+    alfa_complejo_3 = ComplejoSimplicial([])
+    puntos3 = [[0, 0], [1, 0], [0, 1], [1, 1]]
+    radio3 = 1.0
+    print("Números Betti alfa_complejo_3: ", alfa_complejo_3.calcular_betti_alfa_complejos(puntos3, radio3))
+
+    # Ejemplo 4: Conjunto de puntos en 3D formando un tetraedro
+    alfa_complejo_4 = ComplejoSimplicial([])
+    puntos4 = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]
+    radio4 = 1.5
+    print("Números Betti alfa_complejo_4: ", alfa_complejo_4.calcular_betti_alfa_complejos(puntos4, radio4))
+
+    # Ejemplo 5: Conjunto denso de puntos en un plano 2D
+    alfa_complejo_5 = ComplejoSimplicial([])
+    puntos5 = [[0, 0], [0.5, 0], [1, 0], [0, 0.5], [0.5, 0.5], [1, 0.5], [0, 1], [0.5, 1], [1, 1]]
+    radio5 = 0.75
+    print("Números Betti alfa_complejo_5: ", alfa_complejo_5.calcular_betti_alfa_complejos(puntos5, radio5))
+
+    # Ejemplo 6: Conjunto disperso de puntos en 3D
+    alfa_complejo_6 = ComplejoSimplicial([])
+    puntos6 = [[0, 0, 0], [2, 2, 0], [4, 0, 0], [2, 1, 3], [1, 1, 1]]
+    radio6 = 2.5
+    print("Números Betti alfa_complejo_6: ", alfa_complejo_6.calcular_betti_alfa_complejos(puntos6, radio6))
